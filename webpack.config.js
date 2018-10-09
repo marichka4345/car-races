@@ -47,8 +47,17 @@ module.exports = {
             'sass-loader'
           ]
         })
+      },
+      {
+        test: /\.(svg|mp3)$/,
+        loader: 'file-loader'
       }
     ]
+  },
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
   },
   plugins: [HtmlWebpackPluginConfig, ExtractTextPluginConfig]
 };
