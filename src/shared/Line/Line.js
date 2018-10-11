@@ -6,7 +6,6 @@ const behavior = {
   customDisplayObject: props => new PIXI.Graphics(),
   customApplyProps(line, oldProps, newProps) {
     const { color, x, y, x1, y1, x2, y2 } = newProps;
-    console.log(x1, x2);
     line.clear();
     line.lineStyle(1, color, 0.5);
   

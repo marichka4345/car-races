@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
-import { Container, Sprite, Stage } from 'react-pixi-fiber';
+import { Sprite, Stage } from 'react-pixi-fiber';
 import * as PIXI from "pixi.js"
 import Animated from 'animated';
 import { Line } from '../../../shared/Line';
 import carImg from './img/car.svg';
-import flagImg from './img/flag.svg';
 import styles from './Loader.scss'
 
 const DIMENSIONS = {
@@ -45,20 +44,13 @@ export class Loader extends Component {
 
     return (
       <Stage width={width} height={height} options={OPTIONS}>
-        <Container width={300} height={150}>
-          <AnimatedSprite
-            anchor={centerAnchor}
-            texture={PIXI.Texture.fromImage(carImg)}
-            position={new PIXI.Point(translate, height / 2 + 20)}
-            x={translate}
-          />
-          <Sprite
-            anchor={centerAnchor}
-            texture={PIXI.Texture.fromImage(flagImg)}
-            position={new PIXI.Point(width / 1.5, height / 2)}
-          />
-          <Line color="0xffffff" x={width/2} y={height/2 + 40} x1={0} y1={0} x2={280} y2={0} />
-        </Container>
+        <AnimatedSprite
+          anchor={centerAnchor}
+          texture={PIXI.Texture.fromImage(carImg)}
+          position={new PIXI.Point(translate, height / 2 + 20)}
+          x={translate}
+        />
+        <Line color="0xffffff" x={width/2} y={height/2 + 40} x1={0} y1={0} x2={280} y2={0} />
       </Stage>
     );
   }
