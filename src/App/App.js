@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Loader } from './components/Loader/';
-import { StartScreen } from './components/StartScreen/';
+import { Game } from './components/StartScreen/components/Game/Game';
 import '../styles/index.scss';
 
 export class App extends Component {
@@ -20,7 +20,7 @@ export class App extends Component {
         {
           isLoading
           ? <Loader />
-          : <StartScreen />
+          : <Game />
         }
       </div>
     );
