@@ -63,7 +63,7 @@ export class Game extends Component {
 
   getTree = (index) => index % 2 ? tree1Img : tree2Img;
 
-  getTrees = () => {
+  getTrees = (x) => {
     const trees = [];
     const treesCount = Math.ceil(DIMENSIONS.height / 200);
     const centerAnchor = new PIXI.Point(0.5, 0.5);
@@ -73,7 +73,7 @@ export class Game extends Component {
         <Sprite
           anchor={centerAnchor}
           texture={PIXI.Texture.fromImage(this.getTree(i))}
-          position={new PIXI.Point((DIMENSIONS.width - ROAD_WIDTH) / 2 - 50, 200 * (i + 1))}
+          position={new PIXI.Point(x, 200 * i + 50)}
         />
       );
     }
@@ -87,22 +87,24 @@ export class Game extends Component {
     const centerAnchor = new PIXI.Point(0.5, 0.5);
 
     return (
-      <Stage width={width} height={height} position={new PIXI.Point(0, this.state.stageY)}>
-        <Rectangle color={0x260c01} width={ROAD_WIDTH} height={height} x={(width - ROAD_WIDTH) / 2} y={this.state.roadY}>
+      <Stage width={width} height={height} position={new PIXI.Point(0, 0)}>
+        <Rectangle color={0x260c01} width={ROAD_WIDTH} height={height} x={(width - ROAD_WIDTH) / 2} y={0}>
           <Sprite
               anchor={centerAnchor}
               texture={PIXI.Texture.fromImage(carImg)}
-              position={new PIXI.Point(this.state.carX,  this.state.carY)}
+              position={new PIXI.Point(this.state.carX, height / 2)}
           />
         </Rectangle>
 
-        <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} x={0} y={this.state.roadY}>
-          { this.getTrees() }
-        </Rectangle>
+        <Container x={0} y={this.state.stageY}>
+          <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />
+          { this.getTrees(GREEN_AREA_WIDTH - 50) }
+        </Container>
 
-        <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} x={GREEN_AREA_WIDTH + ROAD_WIDTH} y={this.state.roadY}>
-          { this.getTrees() }
-        </Rectangle>
+        <Container x={GREEN_AREA_WIDTH + ROAD_WIDTH} y={this.state.stageY}>
+          <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />
+          { this.getTrees(50) }
+        </Container>
       </Stage>
     );
   }
