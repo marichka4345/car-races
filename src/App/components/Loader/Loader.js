@@ -4,7 +4,6 @@ import * as PIXI from "pixi.js"
 import Animated from 'animated';
 import { Line } from '../../../shared/Line';
 import carImg from './img/car.svg';
-import styles from './Loader.scss'
 
 const DIMENSIONS = {
   width: window.innerWidth,

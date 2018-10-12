@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "webpack",
-    "start": "webpack-dev-server --watch --open",
+    "start": "webpack-dev-server --watch",
     "precommit": "lint-staged"
   },
   "lint-staged": {
