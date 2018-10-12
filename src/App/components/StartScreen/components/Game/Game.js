@@ -17,63 +17,74 @@ const GREEN_AREA_WIDTH = (DIMENSIONS.width - ROAD_WIDTH) / 2;
 
 const INITIAL_CAR_X = DIMENSIONS.width / 2;
 
+const centerAnchor = new PIXI.Point(0.5, 0.5);
+
 export class Game extends Component {
   state = {
     stageY: 0,
     carX: INITIAL_CAR_X,
     carY: DIMENSIONS.height / 2,
-    roadY: 0
+    roadY: 0,
+    distance: 0,
+    treesCount: Math.ceil(DIMENSIONS.height / 200)
   };
 
+  leftTreeContainer = React.createRef();
+
   componentWillMount() {
+    const { carX } = this.state;
+
     document.addEventListener('keydown', (e) => {
-      if(e.keyCode === 37) {
-        if (this.state.carX === INITIAL_CAR_X - CAR_WIDTH) {
-          return;
-        }
+      switch(e.keyCode) {
+        case 37:
+          if (carX === INITIAL_CAR_X - CAR_WIDTH) {
+            return;
+          }
 
-        this.setState(prevState => ({ carX: prevState.carX - CAR_WIDTH }))
-      }
+          this.setState(prevState => ({ carX: prevState.carX - CAR_WIDTH }));
+          break;
 
-      if(e.keyCode === 38) {
-        this.setState(prevState => ({
-          stageY: prevState.stageY + 20,
-          carY: prevState.carY - 20,
-          roadY: prevState.roadY - 20
-        }))
-      }
+        case 38:
+          this.setState(prevState => ({
+            stageY: prevState.stageY + 20,
+            carY: prevState.carY - 20,
+            roadY: prevState.roadY - 20,
+            distance: prevState.distance + 20,
+            treesCount: prevState.distance + 20 % 100 ? prevState.treesCount + 1 : prevState.treesCount
+          }));
+          break;
 
-      if(e.keyCode === 39) {
-        if (this.state.carX === INITIAL_CAR_X + CAR_WIDTH) {
-          return;
-        }
+        case 39:
+          if (carX === INITIAL_CAR_X + CAR_WIDTH) {
+            return;
+          }
 
-        this.setState(prevState => ({ carX: prevState.carX + CAR_WIDTH }))
-      }
+          this.setState(prevState => ({ carX: prevState.carX + CAR_WIDTH }));
 
-      if(e.keyCode === 40) {
-        this.setState(prevState => ({
-          stageY: prevState.stageY - 20,
-          carY: prevState.carY + 20,
-          roadY: prevState.roadY + 20
-        }))
+        case 40:
+          this.setState(prevState => ({
+            stageY: prevState.stageY - 20,
+            carY: prevState.carY + 20,
+            roadY: prevState.roadY + 20,
+            distance: prevState.distance - 20
+          }));
+          break;
+        default: break;
+
       }
     })
   }
 
   getTree = (index) => index % 2 ? tree1Img : tree2Img;
 
-  getTrees = () => {
+  getTrees = (x, treesCount) => {
     const trees = [];
-    const treesCount = Math.ceil(DIMENSIONS.height / 200);
-    const centerAnchor = new PIXI.Point(0.5, 0.5);
-
     for (let i = 0; i < treesCount; i++) {
       trees.push(
         <Sprite
           anchor={centerAnchor}
           texture={PIXI.Texture.fromImage(this.getTree(i))}
-          position={new PIXI.Point((DIMENSIONS.width - ROAD_WIDTH) / 2 - 50, 200 * (i + 1))}
+          position={new PIXI.Point(x, -200 * i + 50)}
         />
       );
     }
@@ -84,25 +95,27 @@ export class Game extends Component {
   render() {
     const { height, width } = DIMENSIONS;
 
-    const centerAnchor = new PIXI.Point(0.5, 0.5);
+    const { treesCount } = this.state;
 
     return (
-      <Stage width={width} height={height} position={new PIXI.Point(0, this.state.stageY)}>
-        <Rectangle color={0x260c01} width={ROAD_WIDTH} height={height} x={(width - ROAD_WIDTH) / 2} y={this.state.roadY}>
+      <Stage width={width} height={height} position={new PIXI.Point(0, 0)}>
+        <Rectangle color={0x260c01} width={ROAD_WIDTH} height={height} x={(width - ROAD_WIDTH) / 2} y={0}>
           <Sprite
               anchor={centerAnchor}
               texture={PIXI.Texture.fromImage(carImg)}
-              position={new PIXI.Point(this.state.carX,  this.state.carY)}
+              position={new PIXI.Point(this.state.carX, height / 2)}
           />
         </Rectangle>
 
-        <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} x={0} y={this.state.roadY}>
-          { this.getTrees() }
-        </Rectangle>
+        <Container x={0} y={this.state.stageY} ref={this.leftTreeContainer}>
+          <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />
+          { this.getTrees(GREEN_AREA_WIDTH - 50, treesCount) }
+        </Container>
 
-        <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} x={GREEN_AREA_WIDTH + ROAD_WIDTH} y={this.state.roadY}>
-          { this.getTrees() }
-        </Rectangle>
+        <Container x={GREEN_AREA_WIDTH + ROAD_WIDTH} y={this.state.stageY}>
+          <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />
+          { this.getTrees(50, treesCount) }
+        </Container>
       </Stage>
     );
   }

@@ -22,7 +22,11 @@ module.exports = {
   },
   resolve: { extensions: ['.js'] },
   devServer: {
-    historyApiFallback: true
+    disableHostCheck: true,
+    historyApiFallback: true,
+    watchOptions: {
+      ignored: /node_modules/
+    }
   },
   module: {
     rules: [
@@ -55,9 +59,23 @@ module.exports = {
     ]
   },
   optimization: {
+    namedChunks: true,
+    runtimeChunk: {
+      name: 'runtime'
+    },
     splitChunks: {
-      chunks: 'all'
+      cacheGroups: {
+        default: false,
+        vendors: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'initial' // all
+        }
+      }
     }
+  },
+  performance: {
+    hints: false
   },
   plugins: [HtmlWebpackPluginConfig, ExtractTextPluginConfig]
 };
