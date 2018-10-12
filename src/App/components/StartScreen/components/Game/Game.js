@@ -11,6 +11,11 @@ const DIMENSIONS = {
   height: window.innerHeight
 };
 
+const COLORS = {
+  grassColor: 0x55AE3A,
+  roadColor: 0x260c01
+};
+
 const CAR_WIDTH = 100;
 const ROAD_WIDTH = CAR_WIDTH * 3;
 const GREEN_AREA_WIDTH = (DIMENSIONS.width - ROAD_WIDTH) / 2;
@@ -18,6 +23,9 @@ const GREEN_AREA_WIDTH = (DIMENSIONS.width - ROAD_WIDTH) / 2;
 const INITIAL_CAR_X = DIMENSIONS.width / 2;
 
 const centerAnchor = new PIXI.Point(0.5, 0.5);
+
+const KEY_CODES = ['ArrowUp', 'ArrowRight', 'ArrowLeft'];
+const keysPressed = {};
 
 export class Game extends Component {
   state = {
@@ -32,50 +40,80 @@ export class Game extends Component {
   leftTreeContainer = React.createRef();
 
   componentWillMount() {
-    const { carX } = this.state;
-
     document.addEventListener('keydown', (e) => {
-      switch(e.keyCode) {
-        case 37:
-          if (carX === INITIAL_CAR_X - CAR_WIDTH) {
-            return;
-          }
+      const { code } = e;
 
-          this.setState(prevState => ({ carX: prevState.carX - CAR_WIDTH }));
-          break;
+      keysPressed[code] = true;
 
-        case 38:
-          this.setState(prevState => ({
-            stageY: prevState.stageY + 20,
-            carY: prevState.carY - 20,
-            roadY: prevState.roadY - 20,
-            distance: prevState.distance + 20,
-            treesCount: prevState.distance + 20 % 100 ? prevState.treesCount + 1 : prevState.treesCount
-          }));
-          break;
-
-        case 39:
-          if (carX === INITIAL_CAR_X + CAR_WIDTH) {
-            return;
-          }
-
-          this.setState(prevState => ({ carX: prevState.carX + CAR_WIDTH }));
-
-        case 40:
-          this.setState(prevState => ({
-            stageY: prevState.stageY - 20,
-            carY: prevState.carY + 20,
-            roadY: prevState.roadY + 20,
-            distance: prevState.distance - 20
-          }));
-          break;
-        default: break;
-
+      if (keysPressed.ArrowUp && keysPressed.ArrowRight) {
+        console.log('up & right');
+        this.moveForward();
+        this.moveRight();
+        return;
       }
-    })
+
+      if (keysPressed.ArrowUp && keysPressed.ArrowLeft) {
+        console.log('up & left');
+        this.moveForward();
+        this.moveLeft();
+        return;
+      }
+
+      if (code === 'ArrowUp') {
+        this.moveForward();
+      }
+
+      if (code === 'ArrowDown') {
+      }
+
+      if (code === 'ArrowRight') {
+        this.moveRight();
+      }
+
+      if (code === 'ArrowLeft') {
+        this.moveLeft();
+      }
+    });
+
+    document.addEventListener('keyup', ({ code }) => {
+      if (KEY_CODES.includes(code)) {
+        console.log('released ', code)
+        keysPressed[code] = false;
+      }
+    });
   }
 
-  getTree = (index) => index % 2 ? tree1Img : tree2Img;
+  moveForward() {
+    this.setState(({ stageY, carY, roadY, distance, treesCount }) => ({
+      stageY: stageY + 20,
+      carY: carY - 20,
+      roadY: roadY - 20,
+      distance: distance + 20,
+      treesCount: distance + 20 % 100 ? treesCount + 1 : treesCount
+    }));
+  }
+
+  moveRight() {
+    const { carX } = this.state;
+
+    if (carX === INITIAL_CAR_X + CAR_WIDTH) {
+      return;
+    }
+
+    this.setState(prevState => ({ carX: prevState.carX + CAR_WIDTH }));
+  }
+
+  moveLeft() {
+    const { carX } = this.state;
+
+    if (carX === INITIAL_CAR_X - CAR_WIDTH) {
+      return;
+    }
+
+    this.setState(prevState => ({ carX: prevState.carX - CAR_WIDTH }));
+  }
+
+  getTree = index => index % 2 ? tree1Img : tree2Img;
 
   getTrees = (x, treesCount) => {
     const trees = [];
@@ -97,23 +135,25 @@ export class Game extends Component {
 
     const { treesCount } = this.state;
 
+    const grass =
+      <Rectangle color={COLORS.grassColor} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />;
+
     return (
       <Stage width={width} height={height} position={new PIXI.Point(0, 0)}>
-        <Rectangle color={0x260c01} width={ROAD_WIDTH} height={height} x={(width - ROAD_WIDTH) / 2} y={0}>
-          <Sprite
-              anchor={centerAnchor}
-              texture={PIXI.Texture.fromImage(carImg)}
-              position={new PIXI.Point(this.state.carX, height / 2)}
-          />
-        </Rectangle>
+        <Rectangle color={COLORS.roadColor} width={ROAD_WIDTH} height={height} x={(width - ROAD_WIDTH) / 2} y={0} />
+        <Sprite
+            anchor={centerAnchor}
+            texture={PIXI.Texture.fromImage(carImg)}
+            position={new PIXI.Point(this.state.carX, height / 2)}
+        />
 
         <Container x={0} y={this.state.stageY} ref={this.leftTreeContainer}>
-          <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />
+          { grass }
           { this.getTrees(GREEN_AREA_WIDTH - 50, treesCount) }
         </Container>
 
         <Container x={GREEN_AREA_WIDTH + ROAD_WIDTH} y={this.state.stageY}>
-          <Rectangle color={0x55AE3A} width={GREEN_AREA_WIDTH} height={height} y={this.state.roadY} />
+          { grass }
           { this.getTrees(50, treesCount) }
         </Container>
       </Stage>

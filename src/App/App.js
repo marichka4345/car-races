@@ -18,11 +18,9 @@ export class App extends Component {
     return (
       <div>
         {
-          // isLoading
-          // ? <Loader />
-          // : <Game />
-
-          <Game />
+          isLoading
+            ? <Loader />
+            : <Game />
         }
       </div>
     );
